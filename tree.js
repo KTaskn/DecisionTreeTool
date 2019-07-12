@@ -1,6 +1,7 @@
 
 // 決定木描画用関数
 function make_tree(tree_structure) {
+    require(['d3'], function(d3) {
     // フラットデータをヒエラルキーデータへ変換
     var stratify = d3.stratify()
         .id(function(d) { return d.node_number; })
@@ -114,6 +115,7 @@ function make_tree(tree_structure) {
         .attr("y", function(d) { return d.children ? -20 : 0; })
         .style("text-anchor", "end" )
         .text(function(d) { return d.children ? d.data.data.feature + ' <= ' + d.data.data.threshold : d.name; });
+    });
 }
 
 

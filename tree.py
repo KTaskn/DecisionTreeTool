@@ -10,6 +10,12 @@ import subprocess
 # ----- ヒストグラムのデータを取得する自作メソッド ----- #
 from make_histdata import get_histdata
 
+
+CSS_PATH        = './style.css'
+TREE_JS_PATH    = './tree.js'
+HIST_JS_PATH    = './histgram.js'
+FIT_JS_PATH     = './cov_fit.js'
+
 def usage():
     print("Decision Tree Tool")
     print("")
@@ -265,29 +271,27 @@ def get_html(json):
     histogram_plot_js = f.read()
     f.close()
 
-    html = '<!DOCTYPE html>\n'
-    html += '<head>\n'
-    html += '    <meta charset="utf-8">\n'
-    html += '    <script src="http://d3js.org/d3.v4.min.js"></script>\n'
-    html += '    <script src="https://cdn.jsdelivr.net/jstat/latest/jstat.min.js"></script>\n'
-    html += '    <!-- <link rel="stylesheet" type="text/css" href="d3_4.css"> -->\n'
+    html = ""
     html += '    <style>{}</style>'.format(style)
-    html += '</head>\n'
-    html += '\n'
-    html += '<body>\n'
-    html += '    <!-- ポップアップを配置させて、隠しておく -->\n'
-    html += '    <div class="popup" id="js-popup">\n'
-    html += '            <div class="popup-inner" id="popup-inner">\n'
+    html += '    <div class="" id="js-popup">\n'
+    html += '            <div class="" id="popup-inner">\n'
     html += '                <div class="close-btn" id="js-close-btn"></div>\n'
     html += '            </div>\n'
     html += '            <div class="black-background" id="js-black-bg"></div>\n'
     html += '    </div>\n'
     html += '    <!-- jsファイルの読み込み -->\n'
     html += '    <script>var jsonData = {}</script>'.format(json)
-    html += '    <script>{}</script>\n'.format(tree_plot_js)
-    html += '    <script>{}</script>\n'.format(poisson_js)
-    html += '    <script>{}</script>\n'.format(histogram_plot_js)
-    html += '</body>\n'
+    html += """
+    <script>
+    requirejs.config({
+        paths: {
+            'd3': ['https://d3js.org/d3.v4.min'],
+            'jstat': ['https://cdn.jsdelivr.net/jstat/latest/jstat.min.js'],
+        },
+    });
+    </script>
+    """
+    html += '    <script>{}\n{}\n{}\n</script>\n'.format(tree_plot_js, poisson_js, histogram_plot_js)
     
     return html
 
@@ -395,9 +399,10 @@ def main():
     clf = tree_calc(x, y, X, Y, skltree_opts_dict)
     print(get_html(tree_dump(clf, tool_opts_dict["obj_var"], tool_opts_dict["num_of_bins"], x, y)))
 
-CSS_PATH        = './style.css'
-TREE_JS_PATH    = './tree.js'
-HIST_JS_PATH    = './histgram.js'
-FIT_JS_PATH     = './cov_fit.js'
+def plot_tree(clf, obj_var, num_of_bins, x, y):
+    return get_html(
+        tree_dump(clf, obj_var, num_of_bins, x, y)
+    )
 
-main()
+if __name__ == "__main__":
+    main()

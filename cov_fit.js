@@ -1,4 +1,5 @@
 function make_destribution(tree_structure) {
+    require(['d3'], function(d3) {
     var datas = [];
     var data;
     var i;
@@ -126,6 +127,7 @@ function make_destribution(tree_structure) {
                 tooltip.style("visibility", "hidden");
             });
     }
+    });
 }
 
 make_destribution(jsonData);

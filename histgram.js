@@ -20,6 +20,7 @@ function popup_func() {
 
 // ヒストグラム描画用関数
 function plot_histogram(currentNode) {
+    require(['d3'], function(d3) {
     // ヒストグラムがすでに描画されていれば、削除する。
     d3.select("body").selectAll("#histogram")
         .remove();
@@ -102,5 +103,5 @@ function plot_histogram(currentNode) {
         })
         .attr("fill", "steelblue")
         .attr("class", "bar")
-
+    });
 }
