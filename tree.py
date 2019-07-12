@@ -162,9 +162,7 @@ def tree_dump(clf, obj_var, num_bins, x, y):
     # --- ヒストグラムを描画するためのデータを取得してjsonに追記するメソッド --- #
     get_histdata(tree_structure_dict, x, y, obj_var, num_bins)
 
-    f = open("./data/tree_structure.json", "w")
-    json.dump(tree_structure_dict, f, indent=4, allow_nan=True)
-    f.close()
+    return json.dumps(tree_structure_dict, indent=4, allow_nan=True)
 
 def get_data(csv_path, obj_var, dummy_vars):
     '''
@@ -186,7 +184,7 @@ def get_data(csv_path, obj_var, dummy_vars):
         Y: テストデータ目的変数
     '''
     # データのロード
-    df = pd.read_csv(csv_path, index_col=0)
+    df = pd.read_csv(csv_path).reset_index()
     # データ整形
     if dummy_vars != None:
         df = pd.get_dummies(df, dummy_na=True, columns=dummy_vars)
@@ -246,7 +244,7 @@ def tree_calc(x, y, X, Y, opts):
 
     return clf
 
-def get_html():
+def get_html(json):
     '''
     abst:
         分析結果を表示するHTMLを作成
@@ -254,9 +252,6 @@ def get_html():
     output:
         html: 分析結果を表示するhtml
     '''
-    f = open(JSON_PATH, "r")
-    json = f.read()
-    f.close()
     f = open(CSS_PATH, "r")
     style = f.read()
     f.close()
@@ -398,12 +393,9 @@ def main():
     # データ整形して決定木分析
     x, y, X, Y = get_data(tool_opts_dict["csv_path"], tool_opts_dict["obj_var"], tool_opts_dict["dummy_vars"])
     clf = tree_calc(x, y, X, Y, skltree_opts_dict)
-    tree_dump(clf, tool_opts_dict["obj_var"], tool_opts_dict["num_of_bins"], x, y)
-    html = get_html()
-    print(html)
+    print(get_html(tree_dump(clf, tool_opts_dict["obj_var"], tool_opts_dict["num_of_bins"], x, y)))
 
 CSS_PATH        = './style.css'
-JSON_PATH       = './data/tree_structure.json'
 TREE_JS_PATH    = './tree.js'
 HIST_JS_PATH    = './histgram.js'
 FIT_JS_PATH     = './cov_fit.js'
